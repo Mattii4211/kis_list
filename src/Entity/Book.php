@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use DateTimeImmutable;
+use App\Repository\BookRepository;
 
-#[ORM\Entity]
 #[ORM\Table(name: 'books')]
+#[ORM\Entity(repositoryClass: BookRepository::class)]
 class Book
 {
     #[ORM\Id]
@@ -28,16 +30,22 @@ class Book
     #[Assert\NotBlank]
     private string $author;
 
-    #[ORM\Column(type: 'boolean')]
-    private bool $isBorrowed = false;
-
-    #[ORM\Column(type: 'string', length: 6, nullable: true)]
-    #[Assert\Length(min: 6, max: 6)]
-    #[Assert\Regex(pattern: '/^[0-9]{6}$/', message: 'Card number must be exactly 6 digits.')]
-    private ?string $borrowerCardNumber = null;
+    #[ORM\ManyToOne(targetEntity: Readers::class, inversedBy: 'books')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Readers $reader = null;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $borrowedAt = null;
+    private ?DateTimeImmutable $borrowedAt = null;
+
+    public function __construct(
+        string $serialNumber, 
+        string $title, 
+        string $author)
+    {
+        $this->serialNumber = $serialNumber;
+        $this->title = $title;
+        $this->author = $author;
+    }
 
     public function getId(): ?int
     {
@@ -80,36 +88,29 @@ class Book
         return $this;
     }
 
+    public function getReader(): ?Readers
+    {
+        return $this->reader;
+    }
+
+    public function setReader(?Readers $reader): self
+    {
+        $this->reader = $reader;
+
+        return $this;
+    }
+
     public function isBorrowed(): bool
     {
-        return $this->isBorrowed;
+        return $this->reader !== null;
     }
 
-    public function setIsBorrowed(bool $isBorrowed): self
-    {
-        $this->isBorrowed = $isBorrowed;
-
-        return $this;
-    }
-
-    public function getBorrowerCardNumber(): ?string
-    {
-        return $this->borrowerCardNumber;
-    }
-
-    public function setBorrowerCardNumber(?string $borrowerCardNumber): self
-    {
-        $this->borrowerCardNumber = $borrowerCardNumber;
-
-        return $this;
-    }
-
-    public function getBorrowedAt(): ?\DateTimeImmutable
+    public function getBorrowedAt(): ?DateTimeImmutable
     {
         return $this->borrowedAt;
     }
 
-    public function setBorrowedAt(?\DateTimeImmutable $borrowedAt): self
+    public function setBorrowedAt(?DateTimeImmutable $borrowedAt): self
     {
         $this->borrowedAt = $borrowedAt;
 

@@ -13,17 +13,19 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use App\Repository\BookRepository;
 
 class BookController extends AbstractController
 {
-    public function __construct(private EntityManagerInterface $em)
-    {
-    }
+    public function __construct(
+        private EntityManagerInterface $em,
+        private BookRepository $bookRepository
+    ) {}
 
     #[Route('/api/books', name: 'book_list', methods: ['GET'])]
-    public function list(SerializerInterface $serializer): JsonResponse
+    public function list(SerializerInterface $serializer, int $lastId = 0): JsonResponse
     {
-        $books = $this->em->getRepository(Book::class)->findAll();
+        $books = $this->bookRepository->getBooksAfterId($lastId);
         $payload = $serializer->serialize($books, 'json');
 
         return new JsonResponse($payload, Response::HTTP_OK, [], true);

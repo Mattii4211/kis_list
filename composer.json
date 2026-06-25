@@ -28,9 +28,11 @@
         "symfony/yaml": "8.1.*"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "*",
+        "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^13.0",
-        "symfony/phpunit-bridge": "^8.1",
-        "phpstan/phpstan": "^2.16"
+        "symfony/maker-bundle": "^1.67",
+        "symfony/phpunit-bridge": "^8.1"
     },
     "config": {
         "allow-plugins": {
@@ -83,10 +85,5 @@
             "allow-contrib": false,
             "require": "8.1.*"
         }
-    },
-    "require-dev": {
-        "phpstan/phpstan": "*",
-        "phpunit/phpunit": "*",
-        "symfony/phpunit-bridge": "*"
     }
 }
