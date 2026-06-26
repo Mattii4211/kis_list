@@ -20,6 +20,7 @@ RUN composer install \
     --no-interaction \
     --no-scripts
 COPY . ./
+RUN composer dump-autoload --optimize --classmap-authoritative
 RUN mkdir -p var
 RUN a2enmod rewrite
 RUN sed -ri 's!DocumentRoot /var/www/html!DocumentRoot /var/www/html/public!g' /etc/apache2/sites-available/*.conf
