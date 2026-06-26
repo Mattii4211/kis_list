@@ -15,6 +15,7 @@ framework:
 
     cache:
         app: cache.adapter.filesystem
+        directory: '%kernel.cache_dir%'
 
 when@test:
     framework:

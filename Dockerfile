@@ -20,8 +20,9 @@ RUN composer install \
     --no-interaction \
     --no-scripts
 COPY . ./
+RUN mkdir -p /var/www/html/var/cache /var/www/html/var/log \
+    && chmod -R 777 /var/www/html/var
 RUN composer dump-autoload --optimize --classmap-authoritative
-RUN mkdir -p var/cache var/log
 RUN a2enmod rewrite
 RUN sed -ri 's!DocumentRoot /var/www/html!DocumentRoot /var/www/html/public!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri 's!<Directory /var/www/html>!<Directory /var/www/html/public>!g' /etc/apache2/sites-available/*.conf || true
@@ -32,6 +33,3 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 EXPOSE 80
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["apache2-foreground"]
-RUN mkdir -p /var/www/html/var/cache /var/www/html/var/log \
-    && chmod -R 777 /var/www/html/var \
-    && chmod -R 777 /tmp
