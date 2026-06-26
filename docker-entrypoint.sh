@@ -1,9 +1,10 @@
 #!/bin/bash
 set -e
 
+rm -rf var/cache/*
 mkdir -p var/cache var/log
 chown -R www-data:www-data var
-chmod -R ug+rwX var
+chmod -R 777 var
 
 if [ "$1" = 'apache2-foreground' ]; then
   until php bin/console doctrine:database:create --if-not-exists --no-interaction; do
