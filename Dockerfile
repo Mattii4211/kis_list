@@ -27,7 +27,8 @@ RUN sed -ri 's!DocumentRoot /var/www/html!DocumentRoot /var/www/html/public!g' /
 RUN sed -ri 's!<Directory /var/www/html>!<Directory /var/www/html/public>!g' /etc/apache2/sites-available/*.conf || true
 RUN sed -ri 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf
 RUN chown -R www-data:www-data /var/www/html
-RUN chmod -R ug+rwX /var/www/html/varCOPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod -R ug+rwX /var/www/html/var
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 80
