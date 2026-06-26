@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Ignore;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'readers')]
@@ -30,6 +30,9 @@ class Readers
     #[Assert\Regex(pattern: '/^[0-9]{6}$/', message: 'Card number must be exactly 6 digits.')]
     private string $borrowerCardNumber;
 
+    /**
+     * @var Collection<int, Book>
+     */
     #[ORM\OneToMany(mappedBy: 'reader', targetEntity: Book::class)]
     private Collection $books;
 
@@ -82,6 +85,9 @@ class Readers
         return $this;
     }
 
+    /**
+     * @return Collection<int, Book>
+     */
     #[Ignore]
     public function getBooks(): Collection
     {

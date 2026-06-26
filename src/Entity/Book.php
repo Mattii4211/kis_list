@@ -2,10 +2,9 @@
 
 namespace App\Entity;
 
+use App\Repository\BookRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use DateTimeImmutable;
-use App\Repository\BookRepository;
 
 #[ORM\Table(name: 'books')]
 #[ORM\Entity(repositoryClass: BookRepository::class)]
@@ -35,11 +34,11 @@ class Book
     private ?Readers $reader = null;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?DateTimeImmutable $borrowedAt = null;
+    private ?\DateTimeImmutable $borrowedAt = null;
 
     public function __construct(
-        string $serialNumber, 
-        string $title, 
+        string $serialNumber,
+        string $title,
         string $author)
     {
         $this->serialNumber = $serialNumber;
@@ -102,15 +101,15 @@ class Book
 
     public function isBorrowed(): bool
     {
-        return $this->reader !== null;
+        return null !== $this->reader;
     }
 
-    public function getBorrowedAt(): ?DateTimeImmutable
+    public function getBorrowedAt(): ?\DateTimeImmutable
     {
         return $this->borrowedAt;
     }
 
-    public function setBorrowedAt(?DateTimeImmutable $borrowedAt): self
+    public function setBorrowedAt(?\DateTimeImmutable $borrowedAt): self
     {
         $this->borrowedAt = $borrowedAt;
 

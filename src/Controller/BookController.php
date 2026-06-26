@@ -3,32 +3,36 @@
 namespace App\Controller;
 
 use App\Entity\Book;
+use App\Repository\BookRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use App\Repository\BookRepository;
 
 class BookController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $em,
-        private BookRepository $bookRepository
-    ) {}
+        private BookRepository $bookRepository,
+    ) {
+    }
 
     #[Route('/api/books', name: 'book_list', methods: ['GET'])]
     public function list(SerializerInterface $serializer, int $lastId = 0): JsonResponse
     {
         $books = $this->bookRepository->getBooksAfterId($lastId);
-        $payload = $serializer->serialize($books, 'json');
 
-        return new JsonResponse($payload, Response::HTTP_OK, [], true);
+        return new JsonResponse(
+            $serializer->serialize($books, 'json'),
+            Response::HTTP_OK,
+            [],
+            true
+        );
     }
 
     #[Route('/api/books', name: 'book_create', methods: ['POST'])]
@@ -54,6 +58,7 @@ class BookController extends AbstractController
         $this->em->flush();
 
         $payload = $serializer->serialize($book, 'json');
+
         return new JsonResponse($payload, Response::HTTP_CREATED, [], true);
     }
 
@@ -88,8 +93,12 @@ class BookController extends AbstractController
             return new JsonResponse(['error' => 'Book is already borrowed.'], Response::HTTP_CONFLICT);
         }
 
-        $book->setIsBorrowed(true);
-        $book->setBorrowerCardNumber((string) $data['borrowerCardNumber']);
+        $reader = $this->em->getRepository('App\Entity\Readers')->findOneBy(['borrowerCardNumber' => $data['borrowerCardNumber']]);
+        if (!$reader) {
+            return new JsonResponse(['error' => 'Reader not found.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $book->setReader($reader);
         $book->setBorrowedAt(new \DateTimeImmutable());
 
         $errors = $validator->validate($book);
@@ -103,9 +112,13 @@ class BookController extends AbstractController
         }
 
         $this->em->flush();
-        $payload = $serializer->serialize($book, 'json', ['groups' => ['book:read']]);
 
-        return new JsonResponse($payload, Response::HTTP_OK, [], true);
+        return new JsonResponse(
+            $serializer->serialize($book, 'json'),
+            Response::HTTP_OK,
+            [],
+            true
+        );
     }
 
     #[Route('/api/books/{serialNumber}/return', name: 'book_return', methods: ['PATCH'])]
@@ -120,8 +133,7 @@ class BookController extends AbstractController
             return new JsonResponse(['error' => 'Book is not currently borrowed.'], Response::HTTP_BAD_REQUEST);
         }
 
-        $book->setIsBorrowed(false);
-        $book->setBorrowerCardNumber(null);
+        $book->setReader(null);
         $book->setBorrowedAt(null);
 
         $this->em->flush();
