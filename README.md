@@ -4,10 +4,9 @@ Prosty projekt Symfony 8.1 z PostgreSQL i Docker Compose.
 
 ## Uruchomienie
 
-1. `docker compose -f docker-compose.yml up --build`
+1. `docker compose up --build`
 2. Aplikacja będzie dostępna pod `http://localhost:8000`
-
-> Root `/` przekierowuje do `/api/books`.
+3. Dmyślnie dodawanych jest kilka książek na róznym statusie.
 
 ## Dostępne endpointy
 
@@ -24,15 +23,7 @@ Dane są przechowywane w wolumenie `db_data`, więc wytrwają restart kontenera.
 
 ## Dokumentacja
 
-Jeśli `nelmio/api-doc-bundle` jest aktywny, dokumentacja może być dostępna pod `/api/docs`.
+Dokumentacja endpointów dostępna pod `/api/doc`.
 
-## Uwaga
-
-Jeśli chcesz wykonać migracje lokalnie, uruchom najpierw tylko bazę:
-
-`docker compose -f docker-compose.yml up -d db`
-
-Następnie w katalogu projektu:
-
-`php bin/console doctrine:migrations:diff`
-`php bin/console doctrine:migrations:migrate`
+## Architektura
+Architektura jest bardzo prosta (nie to było celem zadania). Celowo pominięty został obszar cachowania (wykorzystałnym Redis).

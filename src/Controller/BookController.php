@@ -7,6 +7,7 @@ use App\DTO\CreateBookDTO;
 use App\Entity\Book;
 use App\Factory\BookFactory;
 use App\Repository\BookRepository;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
@@ -82,8 +83,15 @@ class BookController extends AbstractController
     {
         try {
             $bookDto = $serializer->deserialize($request->getContent(), CreateBookDTO::class, 'json');
-        } catch (NotEncodableValueException $exception) {
+        } catch (NotEncodableValueException $e) {
             return new JsonResponse(['error' => 'Invalid JSON body.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($this->bookRepository->findOneBy(['serialNumber' => $bookDto->serialNumber])) {
+            return new JsonResponse(
+                ['error' => 'Book with this serial number already exists.'],
+                Response::HTTP_CONFLICT
+            );
         }
 
         $errors = $validator->validate($book = new Book($bookDto->serialNumber, $bookDto->title, $bookDto->author));
@@ -96,8 +104,15 @@ class BookController extends AbstractController
             return new JsonResponse(['errors' => $messages], Response::HTTP_BAD_REQUEST);
         }
 
-        $this->em->persist($book);
-        $this->em->flush();
+        try {
+            $this->em->persist($book);
+            $this->em->flush();
+        } catch (UniqueConstraintViolationException $e) {
+            return new JsonResponse(
+                ['error' => 'Book with this serial number already exists.'],
+                Response::HTTP_CONFLICT
+            );
+        }
 
         return new JsonResponse(
             $serializer->serialize(BookFactory::create($book), 'json'),
