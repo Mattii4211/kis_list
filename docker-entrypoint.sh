@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+mkdir -p var/cache var/log
+chown -R www-data:www-data var
+chmod -R ug+rwX var
+
 if [ "$1" = 'apache2-foreground' ]; then
   until php bin/console doctrine:database:create --if-not-exists --no-interaction; do
     echo "Waiting for database..."
