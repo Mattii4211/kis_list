@@ -12,7 +12,13 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts --prefer-dist
+RUN composer install \
+    --no-dev \
+    --prefer-dist \
+    --optimize-autoloader \
+    --classmap-authoritative \
+    --no-interaction \
+    --no-scripts
 COPY . ./
 RUN mkdir -p var
 RUN a2enmod rewrite

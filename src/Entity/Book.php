@@ -39,8 +39,8 @@ class Book
     public function __construct(
         string $serialNumber,
         string $title,
-        string $author)
-    {
+        string $author,
+    ) {
         $this->serialNumber = $serialNumber;
         $this->title = $title;
         $this->author = $author;
