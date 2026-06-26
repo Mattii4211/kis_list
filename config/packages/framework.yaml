@@ -13,6 +13,9 @@ framework:
         enabled: true
         enable_attributes: true
 
+    cache:
+        app: cache.adapter.filesystem
+
 when@test:
     framework:
         test: true
