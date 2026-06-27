@@ -21,4 +21,13 @@ if [ "$1" = 'apache2-foreground' ]; then
   fi
 fi
 
+echo "===== DEBUG ====="
+whoami
+id
+ls -ld /var/www/html
+ls -ld /var/www/html/var
+ls -ld /var/www/html/var/cache
+ls -ld /var/www/html/var/cache/prod || true
+touch /var/www/html/var/cache/test.txt && echo "WRITE OK" || echo "WRITE FAILED"
+
 exec "$@"
