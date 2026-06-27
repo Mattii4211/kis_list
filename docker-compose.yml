@@ -1,6 +1,7 @@
 services:
   app:
     build: .
+    user: root
     ports:
       - "8000:80"
     environment:
