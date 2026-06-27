@@ -17,7 +17,7 @@ RUN composer install \
     --prefer-dist \
     --optimize-autoloader \
     --classmap-authoritative \
-    --no-interaction \
+    --no-interaction
 COPY . ./
 RUN mkdir -p /var/www/html/var/cache /var/www/html/var/log \
     && chmod -R 777 /var/www/html/var
