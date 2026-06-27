@@ -22,6 +22,7 @@ if [ "$1" = 'apache2-foreground' ]; then
 fi
 
 echo "===== DEBUG ====="
+php bin/console debug:container --parameter=kernel.cache_dir
 whoami
 id
 ls -ld /var/www/html
