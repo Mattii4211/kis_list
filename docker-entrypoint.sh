@@ -22,6 +22,10 @@ if [ "$1" = 'apache2-foreground' ]; then
 fi
 
 echo "===== DEBUG ====="
+echo "===== APACHE TEST ====="
+su -s /bin/sh www-data -c "whoami"
+su -s /bin/sh www-data -c "touch /var/www/html/var/cache/prod/test-www-data.txt && echo OK || echo FAIL"
+su -s /bin/sh www-data -c "php -r 'rename(\"/tmp/testfile\",\"/var/www/html/var/cache/prod/testfile\");'" || true
 php bin/console debug:container --parameter=kernel.cache_dir
 whoami
 id
