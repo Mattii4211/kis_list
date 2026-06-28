@@ -13,10 +13,10 @@ if [ "$1" = 'apache2-foreground' ]; then
   echo "Running migrations..."
   php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
   # Load fixtures if the environment is not production
-  #if [ "$APP_ENV" != 'prod' ]; then
+  if [ "$APP_ENV" != 'prod' ]; then
     echo "Loading fixtures..."
     php bin/console doctrine:fixtures:load --no-interaction --purge-with-truncate
-  #fi
+  fi
 fi
 
 exec "$@"
